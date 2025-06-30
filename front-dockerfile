@@ -1,0 +1,24 @@
+FROM ubuntu:20.04
+
+RUN apt update
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt install -y apache2
+
+COPY index.html /var/www/html/index.html
+
+# Enable required Apache modules
+RUN a2enmod proxy proxy_http
+
+COPY proxy.conf /etc/apache2/sites-available/proxy.conf
+
+# Enable your site
+RUN a2ensite proxy.conf
+
+# Disable default site (optional)
+RUN a2dissite 000-default.conf
+
+EXPOSE 80
+
+CMD ["apache2ctl", "-DFOREGROUND"]
